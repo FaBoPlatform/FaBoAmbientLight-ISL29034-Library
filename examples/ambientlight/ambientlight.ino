@@ -7,6 +7,8 @@
 #include <Wire.h>
 #include "fabo-isl29034.h"
 
+FaBoAmbientLight faboAmbientLight;
+
 void setup()
 {
   Serial.begin(115200);
