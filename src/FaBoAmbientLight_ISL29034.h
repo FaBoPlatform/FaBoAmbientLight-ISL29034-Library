@@ -24,12 +24,15 @@
 #define ISL29034_REG_CMD2 0x01
 #define ISL29034_REG_DATA_L 0x02
 #define ISL29034_REG_DATA_H 0x03
+#define ISL29034_REG_INT_LT_L 0x04
+#define ISL29034_REG_INT_LT_H 0x05
+#define ISL29034_REG_INT_HT_L 0x06
+#define ISL29034_REG_INT_HT_H 0x07
 #define ISL29034_REG_ID 0x0F
 
-#define ISL29034_OP_P_DOWN 0x00
-#define ISL29034_OP_IR_ONE 0x40
-#define ISL29034_OP_ALSCONT 0xA0
-#define ISL29034_OP_IR_CONT 0xC0
+#define ISL29034_OP_PWR_DOWN 0x00 ///< Power-down the device (Default)
+#define ISL29034_OP_ALS_INTC 0x20 ///< once every integration cycle
+#define ISL29034_OP_ALS_CONT 0xA0 ///< Measures ALS continuously
 
 #define ISL29034_FS_0 0x00 ///< 1,000
 #define ISL29034_FS_1 0x01 ///< 4,000
@@ -49,11 +52,15 @@ class FaBoAmbientLight {
   public:
     FaBoAmbientLight(uint8_t addr = ISL29034_SLAVE_ADDRESS);
     void readID(void);
-    void setOperation(void);
-    void setRange(void);
-    uint16_t readData(void);
+    void setOperation(uint8_t config = ISL29034_OP_PWR_DOWN);
+    void setRange(uint8_t config = ISL29034_FS_0);
+    void setResolution(uint8_t config = ISL29034_RES_16);
+    uint16_t readADC(void);
+    float readLux(void);
   private:
     uint8_t _i2caddr;
+    uint8_t _range;
+    uint8_t _resolution;
     void writeI2c(uint8_t address, uint8_t data);
     void readI2c(uint8_t address, uint8_t num, uint8_t * data);
 };
