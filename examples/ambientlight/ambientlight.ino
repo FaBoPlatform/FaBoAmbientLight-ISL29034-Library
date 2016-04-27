@@ -1,27 +1,21 @@
-//
-// FaBo AmbientLight Brick
-//
-// brick_i2c_ambientlight
-//
 
 #include <Wire.h>
-#include "fabo-isl29034.h"
+#include <FaBoAmbientLight_ISL29034.h>
 
 FaBoAmbientLight faboAmbientLight;
 
-void setup()
-{
-  Serial.begin(115200);
-   
-  faboAmbientLight.configuration();
-  faboAmbientLight.powerOn();
+void setup() {
+  Serial.begin(9600);
+  Serial.println();
+  Serial.println("RESET");
+
+  faboAmbientLight.readID();
+  faboAmbientLight.setOperation();
+  faboAmbientLight.setRange();
+
 }
 
-void loop()
-{ 
-  double ambient = faboAmbientLight.readData();
+void loop() {
+  Serial.println( faboAmbientLight.readData() );
 
-  Serial.print("Ambient:");
-  Serial.println(ambient);
-  delay(1000);
 }
