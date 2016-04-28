@@ -13,6 +13,9 @@
 
 #include "FaBoAmbientLight_ISL29034.h"
 
+/**
+ @brief Constructor
+*/
 FaBoAmbientLight::FaBoAmbientLight(uint8_t addr) {
   _i2caddr = addr;
   _range = ISL29034_FS_0;
@@ -20,23 +23,51 @@ FaBoAmbientLight::FaBoAmbientLight(uint8_t addr) {
   Wire.begin();
 }
 
-void FaBoAmbientLight::begin() {
-  setOperation(ISL29034_OP_ALS_CONT);
-  setRange(ISL29034_FS_3);
-  setResolution(ISL29034_RES_16);
+/**
+ @brief Begin Device
+ @retval true normaly done
+ @retval false device error
+*/
+bool FaBoAmbientLight::begin() {
+  if ( searchDevice() ) {
+    setOperation(ISL29034_OP_ALS_CONT);
+    setRange(ISL29034_FS_3);
+    setResolution(ISL29034_RES_16);
+    return true;
+  } else {
+    return false;
+  }
 }
 
-void FaBoAmbientLight::readID() {
+/**
+ @brief Search Device
+ @retval true device connected
+ @retval false device error
+*/
+bool FaBoAmbientLight::searchDevice() {
   uint8_t data;
   readI2c(ISL29034_REG_ID, 1, &data);
-  Serial.println(data,HEX);
-  Serial.println(data&ISL29034_ID_MASK,HEX);
+//   Serial.println(data,HEX);
+//   Serial.println(data&ISL29034_ID_MASK,HEX);
+  if ( (data & ISL29034_ID_MASK) == ISL29034_DEVICE_ID ) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
+/**
+ @brief Set Operation Mode
+ @param [in] config Operation Mode
+*/
 void FaBoAmbientLight::setOperation(uint8_t config) {
   writeI2c(ISL29034_REG_CMD1, config);
 }
 
+/**
+ @brief Set FullScale Range
+ @param [in] config FullScale Range
+*/
 void FaBoAmbientLight::setRange(uint8_t config) {
   uint8_t data;
   _range = config;
@@ -46,6 +77,10 @@ void FaBoAmbientLight::setRange(uint8_t config) {
   writeI2c(ISL29034_REG_CMD2, data );
 }
 
+/**
+ @brief Set ADC Resolution
+ @param [in] config Resolution
+*/
 void FaBoAmbientLight::setResolution(uint8_t config) {
   uint8_t data;
   _resolution = config;
@@ -55,6 +90,10 @@ void FaBoAmbientLight::setResolution(uint8_t config) {
   writeI2c(ISL29034_REG_CMD2, data );
 }
 
+/**
+ @brief Read ADC data
+ @param [out] adc ADC data
+*/
 uint16_t FaBoAmbientLight::readADC() {
   uint16_t adc;
   uint8_t data[2];
@@ -79,6 +118,10 @@ uint16_t FaBoAmbientLight::readADC() {
   return adc;
 }
 
+/**
+ @brief Read lux data
+ @param [out] lux lux data
+*/
 float FaBoAmbientLight::readLux() {
   uint16_t adc,range,count;
   adc = readADC();
@@ -118,9 +161,11 @@ float FaBoAmbientLight::readLux() {
 
 
 
-
-
-
+/**
+ @brief Write I2C
+ @param [in] address register address
+ @param [in] data write data
+*/
 void FaBoAmbientLight::writeI2c(uint8_t address, uint8_t data) {
   Wire.beginTransmission(_i2caddr);
   Wire.write(address);
@@ -128,6 +173,12 @@ void FaBoAmbientLight::writeI2c(uint8_t address, uint8_t data) {
   Wire.endTransmission();
 }
 
+/**
+ @brief Read I2C
+ @param [in] address register address
+ @param [in] num read length
+ @param [out] data read data
+*/
 void FaBoAmbientLight::readI2c(uint8_t address, uint8_t num, uint8_t * data) {
   Wire.beginTransmission(_i2caddr);
   Wire.write(address);
