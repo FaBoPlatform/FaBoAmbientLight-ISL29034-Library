@@ -17,6 +17,7 @@ ISL29034 is Intersil Integrated Digital Light Sensor.
 ## Releases
 
 - 1.0.0 Initial release.
+- 1.0.1 support esp32-arduino
 
 ## How to install
 
